@@ -1,0 +1,22 @@
+# Vivado files
+*.jou
+*.log
+*.str
+*.xpr
+.Xil/
+.runs/
+.sim/
+.cache/
+
+# Simulation files
+*.vcd
+*.wlf
+work/
+transcript
+
+# Temporary files
+*.tmp
+*.bak
+
+# VS Code
+.vscode/
