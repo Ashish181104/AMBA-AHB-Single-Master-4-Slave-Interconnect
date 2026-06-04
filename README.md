@@ -1,112 +1,104 @@
-````html
+````md
 <div align="center">
 
-<img src="images/intro_ahb.png" width="100%">
+<img src="intro_ahb.png" width="100%">
 
 # AMBA AHB Single Master 4-Slave Interconnect
 
-A Verilog HDL implementation of an AMBA AHB-inspired interconnect system featuring a single master, four memory-mapped slaves, address decoding, response multiplexing, and FSM-based read/write transactions.
+A Verilog HDL implementation of an AMBA AHB-inspired interconnect system featuring a Single Master, Four Memory-Mapped Slaves, Address Decoder, Response Multiplexer, and FSM-Based Read/Write Transactions.
 
-<br>
-
-<img src="https://img.shields.io/badge/Language-Verilog-blue">
-<img src="https://img.shields.io/badge/Protocol-AMBA%20AHB-green">
-<img src="https://img.shields.io/badge/Tool-Vivado-orange">
-<img src="https://img.shields.io/badge/Simulation-Passed-success">
-<img src="https://img.shields.io/badge/RTL-Synthesizable-brightgreen">
+![Verilog](https://img.shields.io/badge/Language-Verilog-blue)
+![Protocol](https://img.shields.io/badge/Protocol-AMBA_AHB-green)
+![Tool](https://img.shields.io/badge/Tool-Vivado-orange)
+![Simulation](https://img.shields.io/badge/Simulation-Passed-success)
+![RTL](https://img.shields.io/badge/RTL-Synthesizable-brightgreen)
 
 </div>
 
 ---
 
-# Overview
+## Overview
 
-This project implements a simplified AMBA AHB-inspired bus architecture consisting of one master and four independent memory-mapped slaves.
+This project implements a simplified **AMBA AHB-inspired bus architecture** consisting of:
 
-The master initiates read and write transactions through a finite state machine (FSM). A decoder selects the target slave based on the slave select signal, while a multiplexer routes the response of the selected slave back to the master.
+- One AHB Master
+- Four Memory-Mapped Slaves
+- Address Decoder
+- Response Multiplexer
+- FSM-Based Transaction Controller
+- Read and Write Transactions
 
-For write transactions, the master performs an arithmetic operation:
+The master initiates transactions through a finite state machine (FSM). The decoder selects the target slave based on the slave select signal, while the multiplexer routes the selected slave response back to the master.
+
+For write transactions, the master performs:
 
 ```text
 HWDATA = DATA_IN_A + DATA_IN_B
 ````
 
-and stores the result in the selected slave memory.
+The computed value is stored in the selected slave memory.
 
-For read transactions, data is retrieved from the selected slave and a read completion signal is generated.
+For read transactions, data is retrieved from the selected slave and a `read_complete` signal is generated.
 
 ---
 
-# Functional Block Diagram
+## Functional Block Diagram
 
-<div align="center">
-
-<img src="images/func_block_diagram.png" width="95%">
-
-</div>
+<p align="center">
+  <img src="func_block_diagram.png" width="90%">
+</p>
 
 The architecture consists of:
 
-<ul>
-<li>AHB Master</li>
-<li>Address Decoder</li>
-<li>Four Memory-Mapped Slaves</li>
-<li>Response Multiplexer</li>
-</ul>
+* AHB Master
+* Decoder
+* Four Memory-Mapped Slaves
+* Response Multiplexer
 
 ---
 
-# RTL Structure
+## RTL Structure
 
-<div align="center">
+<p align="center">
+  <img src="rtl_structure.png" width="90%">
+</p>
 
-<img src="images/rtl_structure.png" width="95%">
+The RTL schematic generated in Vivado verifies the hierarchical implementation of the complete design.
 
-</div>
+### RTL Highlights
 
-The RTL schematic generated in Vivado verifies the hierarchical implementation of the design and demonstrates connectivity between the master, decoder, slaves, and multiplexer.
-
-Key observations:
-
-<ul>
-<li>Centralized AHB Master</li>
-<li>One-Hot Slave Selection</li>
-<li>Shared Bus Architecture</li>
-<li>Four Independent Slave Memories</li>
-<li>Multiplexed Response Path</li>
-</ul>
+* Centralized AHB Master
+* Decoder-Based Slave Selection
+* Shared Bus Architecture
+* Four Independent Slave Memories
+* Multiplexed Response Path
 
 ---
 
-# Simulation Waveforms
+## Simulation Waveforms
 
-<div align="center">
+<p align="center">
+  <img src="sim_waveform.png" width="90%">
+</p>
 
-<img src="images/sim_waveform.png" width="95%">
+The simulation verifies:
 
-</div>
-
-The simulation results verify:
-
-<ul>
-<li>Address Generation</li>
-<li>Slave Selection</li>
-<li>Write Transactions</li>
-<li>Read Transactions</li>
-<li>Data Routing Through Multiplexer</li>
-<li>Read Completion Signaling</li>
-<li>FSM State Transitions</li>
-</ul>
+* Address Generation
+* Slave Selection
+* Write Transactions
+* Read Transactions
+* Multiplexer Operation
+* Read Completion Signaling
+* FSM State Transitions
 
 ---
 
-# System Architecture
+## System Architecture
 
 ```text
                       +----------------+
                       |   AHB MASTER   |
                       +--------+-------+
-                               |
                                |
                                v
 
@@ -133,7 +125,6 @@ The simulation results verify:
                       | MULTIPLEXER    |
                       +--------+-------+
                                |
-                               |
                                v
 
                         Master Response
@@ -141,53 +132,45 @@ The simulation results verify:
 
 ---
 
-# Transaction Flow
+## Transaction Flow
 
 ```text
 User Inputs
       |
       v
-
 AHB Master
       |
       v
-
 Address Generation
       |
       v
-
 Decoder
       |
       v
-
 Target Slave Selection
       |
       v
-
 Memory Read / Write
       |
       v
-
 Multiplexer
       |
       v
-
 Master Receives Response
       |
       v
-
 read_complete = 1
 ```
 
 ---
 
-# Module Description
+## Module Description
 
-## 1. AHB Master
+### 1. AHB Master
 
-The AHB Master controls all bus operations through a finite state machine.
+The master controls all bus operations using a finite state machine.
 
-### FSM States
+#### FSM States
 
 ```text
 IDLE
@@ -201,19 +184,17 @@ DATA
   +----> IDLE
 ```
 
-### Responsibilities
+#### Responsibilities
 
-<ul>
-<li>Generates AHB control signals</li>
-<li>Generates transaction addresses</li>
-<li>Selects target slave</li>
-<li>Performs arithmetic operation (A + B)</li>
-<li>Initiates read transactions</li>
-<li>Initiates write transactions</li>
-<li>Generates read_complete signal</li>
-</ul>
+* Generates AHB control signals
+* Generates transaction addresses
+* Selects target slave
+* Computes `A + B`
+* Initiates write transactions
+* Initiates read transactions
+* Generates `read_complete`
 
-### Important Signals
+#### Important Signals
 
 | Signal        | Description            |
 | ------------- | ---------------------- |
@@ -227,189 +208,160 @@ DATA
 
 ---
 
-## 2. Decoder
+### 2. Decoder
 
-The decoder converts the slave selection value into one-hot slave enable signals.
+The decoder converts slave selection information into one-hot slave enable signals.
 
-### Inputs
+#### Inputs
 
-| Signal    |
-| --------- |
-| sel[1:0]  |
-| sel_valid |
+* sel[1:0]
+* sel_valid
 
-### Outputs
+#### Outputs
 
-| Signal |
-| ------ |
-| hsel_1 |
-| hsel_2 |
-| hsel_3 |
-| hsel_4 |
+* hsel_1
+* hsel_2
+* hsel_3
+* hsel_4
 
-Only one slave is activated at a time.
+Only one slave remains active at a time.
 
 ---
 
-## 3. AHB Slave
+### 3. AHB Slave
 
 Each slave contains an independent 32 × 32 memory array.
 
-### Features
+#### Features
 
-<ul>
-<li>Memory Storage</li>
-<li>Read Operation Support</li>
-<li>Write Operation Support</li>
-<li>AHB Response Generation</li>
-</ul>
+* Memory Storage
+* Read Operations
+* Write Operations
+* Response Generation
 
-### Outputs
+#### Outputs
 
-| Signal    | Description           |
-| --------- | --------------------- |
-| hrdata    | Read Data             |
-| hreadyout | Transfer Ready Signal |
-| hresp     | Transfer Response     |
+| Signal    | Description     |
+| --------- | --------------- |
+| hrdata    | Read Data       |
+| hreadyout | Ready Signal    |
+| hresp     | Response Signal |
 
 ---
 
-## 4. Multiplexer
+### 4. Multiplexer
 
-The multiplexer routes the response of the selected slave back to the master.
+The multiplexer routes the response of the active slave back to the master.
 
-### Functions
+#### Functions
 
-<ul>
-<li>Selects slave read data</li>
-<li>Selects slave response</li>
-<li>Selects slave ready signal</li>
-<li>Returns selected slave outputs to the master</li>
-</ul>
+* Selects read data
+* Selects ready signal
+* Selects response signal
+* Routes outputs to master
 
 ---
 
-# Features Implemented
+## Features Implemented
 
-✔ Single Master Architecture
-
-✔ Four Memory-Mapped Slaves
-
-✔ Decoder-Based Slave Selection
-
-✔ Response Multiplexer
-
-✔ FSM-Based Transaction Controller
-
-✔ Read Transactions
-
-✔ Write Transactions
-
-✔ Arithmetic Data Generation (A + B)
-
-✔ Read Completion Signaling
-
-✔ Vivado RTL Verification
-
-✔ Simulation Verification
+* Single Master Architecture
+* Four Memory-Mapped Slaves
+* Decoder-Based Slave Selection
+* Response Multiplexer
+* FSM-Based Transaction Controller
+* Read Transactions
+* Write Transactions
+* Arithmetic Data Generation (A + B)
+* Read Completion Signaling
+* RTL Verification
+* Simulation Verification
 
 ---
 
-# Test Scenarios Verified
+## Test Scenarios Verified
 
-<ul>
-<li>Write to Slave 1</li>
-<li>Read from Slave 1</li>
-<li>Write to Slave 2</li>
-<li>Read from Slave 2</li>
-<li>Write to Slave 3</li>
-<li>Read from Slave 3</li>
-<li>Write to Slave 4</li>
-<li>Read from Slave 4</li>
-<li>Correct Decoder Operation</li>
-<li>Correct Multiplexer Operation</li>
-</ul>
+* Write to Slave 1
+* Read from Slave 1
+* Write to Slave 2
+* Read from Slave 2
+* Write to Slave 3
+* Read from Slave 3
+* Write to Slave 4
+* Read from Slave 4
+* Decoder Verification
+* Multiplexer Verification
 
 ---
 
-# Project Directory
+## Project Structure
 
 ```text
 AMBA-AHB-Single-Master-4-Slave
 │
-├── rtl
+├── README.md
+├── intro_ahb.png
+├── func_block_diagram.png
+├── rtl_structure.png
+├── sim_waveform.png
+│
+├── rtl/
 │   ├── ahb_master.v
 │   ├── ahb_slave.v
 │   ├── decoder.v
 │   ├── multiplexer.v
 │   └── ahb_top.v
 │
-├── tb
-│   └── ahb_top_tb.v
-│
-├── images
-│   ├── intro_ahb.png
-│   ├── func_block_diagram.png
-│   ├── rtl_structure.png
-│   └── sim_waveform.png
-│
-└── README.md
+└── tb/
+    └── ahb_top_tb.v
 ```
 
 ---
 
-# Tools Used
+## Tools Used
 
-<ul>
-<li>Verilog HDL</li>
-<li>Xilinx Vivado</li>
-<li>Vivado Simulator</li>
-<li>RTL Schematic Viewer</li>
-<li>GitHub</li>
-</ul>
+* Verilog HDL
+* Xilinx Vivado
+* Vivado Simulator
+* RTL Schematic Viewer
+* GitHub
 
 ---
 
-# Future Enhancements
+## Future Enhancements
 
-<ul>
-<li>Multi-Master Architecture</li>
-<li>Bus Arbitration Logic</li>
-<li>Enhanced Error Response Handling</li>
-<li>Wait-State Support</li>
-<li>Extended AHB Feature Support</li>
-<li>FPGA Hardware Validation</li>
-</ul>
+* Multi-Master Support
+* Arbitration Logic
+* Advanced AHB Features
+* Error Response Handling
+* FPGA Hardware Validation
 
 ---
 
-# Results
+## Results
 
-✔ Successful Read Transactions
+✅ Successful Read Transactions
 
-✔ Successful Write Transactions
+✅ Successful Write Transactions
 
-✔ Correct Slave Selection
+✅ Correct Slave Selection
 
-✔ Correct Data Routing
+✅ Correct Multiplexer Routing
 
-✔ Verified RTL Connectivity
+✅ Verified RTL Connectivity
 
-✔ Verified Simulation Waveforms
+✅ Verified Simulation Waveforms
 
-✔ Synthesizable Verilog Design
+✅ Synthesizable RTL Design
 
 ---
 
-# Author
+## Author
 
-<b>Ashish Kumar Kashyap</b>
+**Ashish Kumar Kashyap**
 
 B.Tech, Electronics and Communication Engineering
 
 Motilal Nehru National Institute of Technology Allahabad (MNNIT Allahabad)
-
-AMBA AHB RTL Design Project
 
 ```
 ```
