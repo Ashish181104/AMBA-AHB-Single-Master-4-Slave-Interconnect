@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="images/intro_ahb.png" width="100%">
+<img src="images/intro__ahb.png" width="100%">
 
 <h1>AMBA AHB Single Master 4-Slave Interconnect</h1>
 
