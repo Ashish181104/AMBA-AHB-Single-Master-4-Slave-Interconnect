@@ -50,7 +50,7 @@ The objective of this project is to design and verify a bus architecture capable
 <h2>Functional Block Diagram</h2>
 
 <p align="center">
-<img src="images/func_block_diagram.png" width="95%">
+<img src="images/func__block_diagram.png" width="95%">
 </p>
 
 <p>
@@ -82,7 +82,7 @@ The RTL schematic generated using Vivado verifies the complete connectivity betw
 <h2>Simulation Waveforms</h2>
 
 <p align="center">
-<img src="images/sim_waveform.png" width="95%">
+<img src="images/sim__waveform.png" width="95%">
 </p>
 
 <p>
