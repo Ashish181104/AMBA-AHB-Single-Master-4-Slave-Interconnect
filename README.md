@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="intro_ahb.png" width="100%">
+<img src="images/intro_ahb.png" width="100%">
 
 <h1>AMBA AHB Single Master 4-Slave Interconnect</h1>
 
@@ -50,7 +50,7 @@ The objective of this project is to design and verify a bus architecture capable
 <h2>Functional Block Diagram</h2>
 
 <p align="center">
-<img src="func_block_diagram.png" width="95%">
+<img src="images/func_block_diagram.png" width="95%">
 </p>
 
 <p>
@@ -62,7 +62,7 @@ The system consists of an AHB Master, Decoder, Four Memory-Mapped Slaves, and a 
 <h2>RTL Structure</h2>
 
 <p align="center">
-<img src="rtl_structure.png" width="95%">
+<img src="images/rtl_structure.png" width="95%">
 </p>
 
 <p>
@@ -82,7 +82,7 @@ The RTL schematic generated using Vivado verifies the complete connectivity betw
 <h2>Simulation Waveforms</h2>
 
 <p align="center">
-<img src="sim_waveform.png" width="95%">
+<img src="images/sim_waveform.png" width="95%">
 </p>
 
 <p>
@@ -98,7 +98,7 @@ Simulation verifies successful execution of read and write transactions along wi
 <li>FSM State Transitions</li>
 </ul>
 
-<hr>
+<hr>/
 
 <h2>System Architecture</h2>
 
@@ -136,6 +136,49 @@ Simulation verifies successful execution of read and write transactions along wi
 
                       Master Response
 </pre>
+
+<hr>
+
+<h2>📂 Project Structure</h2>
+
+<p>
+The repository is organized into separate directories for RTL source files,
+testbench verification files, and project documentation resources.
+</p>
+
+<pre>
+AMBA-AHB-Single-Master-4-Slave
+│
+├── README.md
+│
+├── images
+│   ├── intro_ahb.png
+│   ├── func_block_diagram.png
+│   ├── rtl_structure.png
+│   └── sim_waveform.png
+│
+├── rtl
+│   ├── ahb_master.v
+│   ├── ahb_slave.v
+│   ├── decoder.v
+│   ├── multiplexer.v
+│   └── ahb_top.v
+│
+└── tb
+    └── ahb_top_tb.v
+</pre>
+
+<p>
+<b>images/</b> contains architectural diagrams, RTL schematics, and simulation waveforms used throughout the documentation.
+</p>
+
+<p>
+<b>rtl/</b> contains synthesizable Verilog source files implementing the AMBA AHB Single Master 4-Slave architecture.
+</p>
+
+<p>
+<b>tb/</b> contains the verification environment used to validate read and write transactions through simulation.
+</p>
 
 <hr>
 
