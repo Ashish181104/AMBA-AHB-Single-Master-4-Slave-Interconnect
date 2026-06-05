@@ -308,7 +308,7 @@ The design was verified using a dedicated testbench. Four independent transactio
 
 <hr>
 
-<hr>/
+<hr>
 
 <h2>System Architecture</h2>
 
