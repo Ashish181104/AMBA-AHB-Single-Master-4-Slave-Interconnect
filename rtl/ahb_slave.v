@@ -9,14 +9,12 @@
 // Target Devices: Xilinx FPGA
 // Tool Versions: Vivado 2023.x
 //////////////////////////////////////////////////////////////////////////////////
-
 `timescale 1ns / 1ps
 
 module ahb_slave(
     input  wire        hclk,
     input  wire        hresetn,
     input  wire        hsel,
-
     input  wire [31:0] haddr,
     input  wire        hwrite,
     input  wire [2:0]  hsize,
@@ -32,46 +30,51 @@ module ahb_slave(
     output reg  [31:0] hrdata
 );
 
-// memory
 reg [31:0] mem [0:31];
 integer ii;
 
-// initialize memory
+// memory init
 initial begin
-    for (ii = 0; ii < 32; ii = ii + 1)
+    for(ii = 0; ii < 32; ii = ii + 1)
         mem[ii] = 32'd0;
 end
 
-// address registers
 reg [4:0] waddr, raddr, base_addr;
 reg hwrite_reg;
 
-// burst type flags
 reg single_flag, incr_flag, wrap4_flag, incr4_flag;
 reg wrap8_flag, incr8_flag, wrap16_flag, incr16_flag;
 
-// fsm states
 reg [1:0] state;
 
 parameter IDLE = 2'd0;
 parameter ADDR = 2'd1;
 parameter DATA = 2'd2;
 
-// valid transfer check
 wire valid_transfer = hsel && (htrans == 2'b10 || htrans == 2'b11);
 
+// read path
+always @(*)
+begin
+    if(state == DATA && !hwrite_reg)
+    begin
+        hrdata = mem[raddr];
+    end
+    else
+    begin
+        hrdata = 32'd0;
+    end
+end
 
-// main slave logic
 always @(posedge hclk or negedge hresetn)
 begin
-
     if(!hresetn)
     begin
+        // reset values
         state <= IDLE;
 
         hreadyout <= 1'b1;
         hresp <= 1'b0;
-        hrdata <= 32'd0;
 
         waddr <= 5'd0;
         raddr <= 5'd0;
@@ -91,67 +94,64 @@ begin
         wrap16_flag <= 1'b0;
         incr16_flag <= 1'b0;
     end
-
-    else begin
-
+    else
+    begin
         case(state)
 
-        // wait for transfer
         IDLE:
         begin
             hreadyout <= 1'b1;
             hresp <= 1'b0;
 
             if(valid_transfer)
-                state <= ADDR;
+            begin
+                // latch request
+                state <= DATA;
+
+                hwrite_reg <= hwrite;
+                base_addr <= haddr[4:0];
+
+                single_flag <= (hburst == 3'b000);
+                incr_flag   <= (hburst == 3'b001);
+
+                wrap4_flag <= (hburst == 3'b010);
+                incr4_flag <= (hburst == 3'b011);
+
+                wrap8_flag <= (hburst == 3'b100);
+                incr8_flag <= (hburst == 3'b101);
+
+                wrap16_flag <= (hburst == 3'b110);
+                incr16_flag <= (hburst == 3'b111);
+
+                waddr <= haddr[4:0];
+                raddr <= haddr[4:0];
+            end
         end
 
-        // capture control info
         ADDR:
         begin
             hreadyout <= 1'b1;
             hresp <= 1'b0;
 
-            hwrite_reg <= hwrite;
-            base_addr <= haddr[4:0];
-
-            single_flag <= (hburst == 3'b000);
-            incr_flag   <= (hburst == 3'b001);
-
-            wrap4_flag <= (hburst == 3'b010);
-            incr4_flag <= (hburst == 3'b011);
-
-            wrap8_flag <= (hburst == 3'b100);
-            incr8_flag <= (hburst == 3'b101);
-
-            wrap16_flag <= (hburst == 3'b110);
-            incr16_flag <= (hburst == 3'b111);
-
-            waddr <= haddr[4:0];
-            raddr <= haddr[4:0];
-
             state <= DATA;
         end
 
-        // read/write operation
         DATA:
         begin
-
             hreadyout <= 1'b1;
             hresp <= 1'b0;
 
             if(hwrite_reg)
             begin
-
+                // write operation
                 case({single_flag,incr_flag,wrap4_flag,incr4_flag,
                       wrap8_flag,incr8_flag,wrap16_flag,incr16_flag})
 
-                // single write
                 8'b1000_0000:
                 begin
-                    mem[haddr[4:0]] <= hwdata;
+                    mem[waddr] <= hwdata;
                     $display("SLAVE WRITE time=%0t addr=%0d data=%0h",
-                              $time,haddr[4:0],hwdata);
+                              $time,waddr,hwdata);
                 end
 
                 8'b0100_0000:
@@ -191,85 +191,54 @@ begin
                 end
 
                 default: ;
-
                 endcase
-
             end
-
-            else begin
-
+            else
+            begin
+                // read operation
                 case({single_flag,incr_flag,wrap4_flag,incr4_flag,
                       wrap8_flag,incr8_flag,wrap16_flag,incr16_flag})
 
-                // single read
                 8'b1000_0000:
                 begin
-                    hrdata <= mem[haddr[4:0]];
-
                     $display("SLAVE READ time=%0t addr=%0d mem=%0h",
-                             $time,haddr[4:0],mem[haddr[4:0]]);
+                              $time,raddr,mem[raddr]);
                 end
 
                 8'b0100_0000:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= raddr + 1;
-                end
 
                 8'b0010_0000:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= (raddr < base_addr+5'd3) ? raddr+1 : base_addr;
-                end
 
                 8'b0001_0000:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= raddr + 1;
-                end
 
                 8'b0000_1000:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= (raddr < base_addr+5'd7) ? raddr+1 : base_addr;
-                end
 
                 8'b0000_0100:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= raddr + 1;
-                end
 
                 8'b0000_0010:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= (raddr < base_addr+5'd15) ? raddr+1 : base_addr;
-                end
 
                 8'b0000_0001:
-                begin
-                    hrdata <= mem[raddr];
                     raddr <= raddr + 1;
-                end
 
                 default: ;
-
                 endcase
-
             end
 
             if(single_flag)
-                state <= IDLE;
-
+                state <= IDLE;   // done
         end
 
         default:
             state <= IDLE;
 
         endcase
-
     end
-
 end
 
 endmodule
