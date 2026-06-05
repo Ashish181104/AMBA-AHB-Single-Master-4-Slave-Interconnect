@@ -11,10 +11,10 @@
 // Tool Versions: Vivado 2023.x
 //////////////////////////////////////////////////////////////////////////////////
 
+
 `timescale 1ns / 1ps
 
 module multiplexer(
-
     input [31:0] hrdata_1,
     input [31:0] hrdata_2,
     input [31:0] hrdata_3,
@@ -36,33 +36,29 @@ module multiplexer(
     output reg [31:0] hrdata,
     output reg hreadyout,
     output reg hresp
-
 );
 
-// select response from active slave
 always @(*)
 begin
-
     if(!sel_valid)
     begin
+        // no slave selected
         hrdata = 32'd0;
         hreadyout = 1'b1;
         hresp = 1'b0;
     end
-
-    else begin
-
+    else
+    begin
         case(sel)
 
-        // slave 1
         2'b00:
         begin
+            // slave 1
             hrdata = hrdata_1;
             hreadyout = hreadyout_1;
             hresp = hresp_1;
         end
 
-        // slave 2
         2'b01:
         begin
             hrdata = hrdata_2;
@@ -70,15 +66,13 @@ begin
             hresp = hresp_2;
         end
 
-        // slave 3
-        2'b10:
-        begin
+         2'b10:
+         begin
             hrdata = hrdata_3;
             hreadyout = hreadyout_3;
-             hresp = hresp_3;
-        end
+            hresp = hresp_3;
+         end
 
-        // slave 4
         2'b11:
         begin
             hrdata = hrdata_4;
@@ -88,15 +82,14 @@ begin
 
         default:
         begin
+            // default response
             hrdata = 32'd0;
             hreadyout = 1'b1;
             hresp = 1'b0;
         end
 
         endcase
-
     end
-
 end
 
 endmodule
