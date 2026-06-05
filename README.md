@@ -311,10 +311,13 @@ AMBA-AHB-Single-Master-4-Slave
 ├── README.md
 │
 ├── images
-│   ├── intro_ahb.png
-│   ├── func_block_diagram.png
-│   ├── rtl_structure.png
-│   └── sim_waveform.png
+├── intro_ahb.png
+├── func_block_diagram.png
+├── rtl_structure.png
+├── sim_waveform_1.png
+├── sim_waveform_2.png
+├── sim_waveform_3.png
+└── sim_waveform_4.png
 │
 ├── rtl
 │   ├── ahb_master.v
