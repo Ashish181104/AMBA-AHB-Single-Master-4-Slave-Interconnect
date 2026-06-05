@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+
 //////////////////////////////////////////////////////////////////////////////////
 // College: MNNIT Allahabad
 // Ashish Kumar Kashyap
@@ -10,6 +10,7 @@
 // Target Devices: Xilinx FPGA
 // Tool Versions: Vivado 2023.x
 //////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
 module decoder(
     input wire [1:0] sel,
     input wire sel_valid,
