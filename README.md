@@ -50,8 +50,85 @@ The objective of this project is to design and verify a bus architecture capable
 <h2>Functional Block Diagram</h2>
 
 <p align="center">
-<img src="images/func__block_diagram.png" width="95%">
+<img src="images/func_block_diagram.png" width="95%">
 </p>
+
+<p>
+The AMBA AHB interconnect consists of a Single Master, Decoder, Four Memory-Mapped Slaves, and a Response Multiplexer. The master initiates all bus transactions while the decoder selects the target slave based on the selection input.
+</p>
+
+<table>
+<tr>
+<th>Block</th>
+<th>Function</th>
+<th>Inputs</th>
+<th>Outputs</th>
+</tr>
+
+<tr>
+<td><b>AHB Master</b></td>
+<td>Generates read/write transactions and controls bus operation through FSM states.</td>
+<td>enable, data_in_a, data_in_b, addr, wr, slave_sel, hreadyout, hrdata</td>
+<td>haddr, hwdata, hwrite, htrans, hsize, hburst, hprot, sel, sel_valid</td>
+</tr>
+
+<tr>
+<td><b>Decoder</b></td>
+<td>Converts slave selection into one-hot slave enable signals.</td>
+<td>sel, sel_valid</td>
+<td>hsel_1, hsel_2, hsel_3, hsel_4</td>
+</tr>
+
+<tr>
+<td><b>AHB Slave 1</b></td>
+<td>32-word memory used for read/write transactions.</td>
+<td>hsel_1 and bus signals</td>
+<td>hrdata_1, hreadyout_1, hresp_1</td>
+</tr>
+
+<tr>
+<td><b>AHB Slave 2</b></td>
+<td>32-word memory used for read/write transactions.</td>
+<td>hsel_2 and bus signals</td>
+<td>hrdata_2, hreadyout_2, hresp_2</td>
+</tr>
+
+<tr>
+<td><b>AHB Slave 3</b></td>
+<td>32-word memory used for read/write transactions.</td>
+<td>hsel_3 and bus signals</td>
+<td>hrdata_3, hreadyout_3, hresp_3</td>
+</tr>
+
+<tr>
+<td><b>AHB Slave 4</b></td>
+<td>32-word memory used for read/write transactions.</td>
+<td>hsel_4 and bus signals</td>
+<td>hrdata_4, hreadyout_4, hresp_4</td>
+</tr>
+
+<tr>
+<td><b>Multiplexer</b></td>
+<td>Selects response from active slave and routes it back to the master.</td>
+<td>hrdata_x, hreadyout_x, hresp_x</td>
+<td>hrdata, hreadyout, hresp</td>
+</tr>
+
+</table>
+
+<p>
+The master computes:
+</p>
+
+<pre>
+HWDATA = DATA_IN_A + DATA_IN_B
+</pre>
+
+<p>
+The generated data is written into the selected slave memory. During a read operation, the selected slave returns data through the multiplexer and the master asserts <b>read_complete</b>.
+</p>
+
+<hr>
 
 <p>
 The system consists of an AHB Master, Decoder, Four Memory-Mapped Slaves, and a Multiplexer that returns the selected slave response to the master.
@@ -79,15 +156,97 @@ The RTL schematic generated using Vivado verifies the complete connectivity betw
 
 <hr>
 
-<h2>Simulation Waveforms</h2>
-
-<p align="center">
-<img src="images/sim__waveform.png" width="95%">
-</p>
+<h2>Simulation Results</h2>
 
 <p>
-Simulation verifies successful execution of read and write transactions along with correct decoder and multiplexer operation.
+The design was verified using a dedicated testbench. Four independent transactions were performed to validate correct operation of all four memory-mapped slaves.
 </p>
+
+<hr>
+
+<h3>Simulation 1 – Slave 1 Transaction</h3>
+
+<p align="center">
+<img src="images/sim_waveform_1.png" width="95%">
+</p>
+
+<ul>
+<li>Slave Selected = 00 (Slave 1)</li>
+<li>Address = 1</li>
+<li>DATA_IN_A = 0x55555555</li>
+<li>DATA_IN_B = 0xAAAAAAAA</li>
+<li>Master computes HWDATA = 0xFFFFFFFF</li>
+<li>Decoder activates hsel_1</li>
+<li>Data is written into Slave 1 memory</li>
+<li>Read transaction returns 0xFFFFFFFF</li>
+<li>read_complete asserted successfully</li>
+<li>FSM transitions IDLE → ADDR → DATA → IDLE</li>
+</ul>
+
+<hr>
+
+<h3>Simulation 2 – Slave 2 Transaction</h3>
+
+<p align="center">
+<img src="images/sim_waveform_2.png" width="95%">
+</p>
+
+<ul>
+<li>Slave Selected = 01 (Slave 2)</li>
+<li>Address = 2</li>
+<li>DATA_IN_A = 0xCAFE0000</li>
+<li>DATA_IN_B = 0x0000BABE</li>
+<li>Master computes HWDATA = 0xCAFEBABE</li>
+<li>Decoder activates hsel_2</li>
+<li>Data is stored inside Slave 2 memory</li>
+<li>Read operation retrieves 0xCAFEBABE</li>
+<li>Multiplexer forwards Slave 2 response</li>
+<li>read_complete asserted successfully</li>
+</ul>
+
+<hr>
+
+<h3>Simulation 3 – Slave 3 Transaction</h3>
+
+<p align="center">
+<img src="images/sim_waveform_3.png" width="95%">
+</p>
+
+<ul>
+<li>Slave Selected = 10 (Slave 3)</li>
+<li>Address = 3</li>
+<li>DATA_IN_A = 0x12345678</li>
+<li>DATA_IN_B = 0x87654321</li>
+<li>Master computes HWDATA = 0x99999999</li>
+<li>Decoder activates hsel_3</li>
+<li>Data written into Slave 3 memory</li>
+<li>Read operation returns 0x99999999</li>
+<li>Correct slave response selected by multiplexer</li>
+<li>Transaction completed successfully</li>
+</ul>
+
+<hr>
+
+<h3>Simulation 4 – Slave 4 Transaction</h3>
+
+<p align="center">
+<img src="images/sim_waveform_4.png" width="95%">
+</p>
+
+<ul>
+<li>Slave Selected = 11 (Slave 4)</li>
+<li>Address = 4</li>
+<li>DATA_IN_A = 0xDEAD0000</li>
+<li>DATA_IN_B = 0x0000BEEF</li>
+<li>Master computes HWDATA = 0xDEADBEEF</li>
+<li>Decoder activates hsel_4</li>
+<li>Data written into Slave 4 memory</li>
+<li>Read operation returns 0xDEADBEEF</li>
+<li>Response routed through multiplexer</li>
+<li>read_complete asserted successfully</li>
+</ul>
+
+<hr>
 
 <ul>
 <li>Address Generation</li>
