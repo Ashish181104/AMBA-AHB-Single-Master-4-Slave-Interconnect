@@ -180,6 +180,24 @@ The RTL schematic generated using Vivado verifies the complete connectivity betw
 The design was verified using a dedicated testbench. Four independent transactions were performed to validate correct operation of all four memory-mapped slaves.
 </p>
 
+<h4>Signals Verified During Simulation</h4>
+
+<ul>
+<li>hclk</li>
+<li>enable</li>
+<li>slave_sel</li>
+<li>haddr</li>
+<li>hwdata</li>
+<li>hrdata</li>
+<li>hsel_1</li>
+<li>hsel_2</li>
+<li>hsel_3</li>
+<li>hsel_4</li>
+<li>read_complete</li>
+<li>FSM state transitions</li>
+<li>htrans</li>
+</ul>
+
 <hr>
 
 <h3>Simulation 1 – Slave 1 Transaction</h3>
@@ -274,6 +292,21 @@ The design was verified using a dedicated testbench. Four independent transactio
 <li>Read Completion Signaling</li>
 <li>FSM State Transitions</li>
 </ul>
+<h3>Testbench Coverage</h3>
+
+<ul>
+<li>Reset Verification</li>
+<li>Slave 1 Write and Read Transaction</li>
+<li>Slave 2 Write and Read Transaction</li>
+<li>Slave 3 Write and Read Transaction</li>
+<li>Slave 4 Write and Read Transaction</li>
+<li>Read Completion Verification</li>
+<li>FSM State Verification</li>
+<li>Decoder Verification</li>
+<li>Multiplexer Verification</li>
+</ul>
+
+<hr>
 
 <hr>/
 
@@ -313,6 +346,46 @@ The design was verified using a dedicated testbench. Four independent transactio
 
                       Master Response
 </pre>
+
+<hr>
+<h2>Module Summary</h2>
+
+<table>
+<tr>
+<th>Module</th>
+<th>Function</th>
+</tr>
+
+<tr>
+<td>ahb_master</td>
+<td>Generates AHB transactions and controls bus operation</td>
+</tr>
+
+<tr>
+<td>decoder</td>
+<td>Selects one of four slaves</td>
+</tr>
+
+<tr>
+<td>ahb_slave</td>
+<td>Stores and retrieves data from memory</td>
+</tr>
+
+<tr>
+<td>multiplexer</td>
+<td>Routes selected slave response back to master</td>
+</tr>
+
+<tr>
+<td>ahb_top</td>
+<td>Integrates all modules into a complete system</td>
+</tr>
+
+<tr>
+<td>ahb_top_tb</td>
+<td>Verifies design functionality through simulation</td>
+</tr>
+</table>
 
 <hr>
 
