@@ -30,6 +30,24 @@ The Advanced Microcontroller Bus Architecture (AMBA) is an industry-standard on-
 This project implements a simplified AHB-inspired interconnect consisting of a single master and four memory-mapped slaves. The design demonstrates address decoding, slave selection, read/write transactions, and response multiplexing using Verilog HDL.
 </p>
 
+<h4>Transaction Flow</h4>
+
+<pre>
+User Inputs
+     ↓
+AHB Master
+     ↓
+Decoder
+     ↓
+Selected Slave
+     ↓
+Memory Read / Write
+     ↓
+Multiplexer
+     ↓
+Master Response
+</pre>
+
 <h2>Project Objective</h2>
 
 <p>
@@ -350,6 +368,14 @@ AMBA-AHB-Single-Master-4-Slave
 The master receives user inputs and initiates transactions through a finite state machine.
 </p>
 
+<h4>Master FSM States</h4>
+
+<ul>
+<li><b>IDLE</b> : Waits for a transaction request.</li>
+<li><b>ADDR</b> : Captures address and control information.</li>
+<li><b>DATA</b> : Performs read/write operation and completes the transfer.</li>
+</ul>
+
 <p>
 For write operations:
 </p>
@@ -365,6 +391,19 @@ The computed value is stored in the selected slave memory.
 <p>
 For read operations, data is fetched from the selected slave and returned through the multiplexer. A read_complete signal indicates successful completion of the read transaction.
 </p>
+<h4>Read Data Path</h4>
+
+<pre>
+Slave Memory
+      ↓
+Multiplexer
+      ↓
+HRDATA
+      ↓
+AHB Master
+      ↓
+read_complete
+</pre>
 
 <hr>
 
@@ -382,6 +421,14 @@ For read operations, data is fetched from the selected slave and returned throug
 </ul>
 
 <h3>Decoder</h3>
+<h4>Slave Selection Logic</h4>
+
+<pre>
+sel = 00 → hsel_1
+sel = 01 → hsel_2
+sel = 10 → hsel_3
+sel = 11 → hsel_4
+</pre>
 
 <ul>
 <li>Converts slave selection into one-hot slave enable signals</li>
@@ -389,6 +436,13 @@ For read operations, data is fetched from the selected slave and returned throug
 </ul>
 
 <h3>AHB Slaves</h3>
+<h4>Memory Organization</h4>
+
+<ul>
+<li>Each slave contains a 32 × 32-bit memory array.</li>
+<li>Total memory per slave = 1024 bits.</li>
+<li>Total memory across four slaves = 4096 bits.</li>
+</ul>
 
 <ul>
 <li>32 × 32 Memory Array</li>
